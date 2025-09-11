@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d5" for="edge" attr.name="concepts" attr.type="string" />
+  <key id="d4" for="edge" attr.name="type" attr.type="string" />
+  <key id="d3" for="edge" attr.name="relation" attr.type="string" />
+  <key id="d2" for="node" attr.name="file_id" attr.type="string" />
+  <key id="d1" for="node" attr.name="type" attr.type="string" />
+  <key id="d0" for="node" attr.name="id" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940">
+      <data key="d0">技术秘密披露行为</data>
+      <data key="d1">entity</data>
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+    </node>
+    <node id="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed">
+      <data key="d0">重复诉讼认定</data>
+      <data key="d1">entity</data>
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+    </node>
+    <node id="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795">
+      <data key="d0">权利人</data>
+      <data key="d1">entity</data>
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+    </node>
+    <node id="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340">
+      <data key="d0">同一主体</data>
+      <data key="d1">entity</data>
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+    </node>
+    <node id="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775">
+      <data key="d0">另一主体</data>
+      <data key="d1">entity</data>
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+    </node>
+    <node id="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d2">008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b</data>
+      <data key="d0">针对披露技术秘密行为的重复诉讼认定 技术秘密的披露是一过性行为，权利人已就同一主体向另一主体披露同一技术秘密信息的行为提起诉讼，又在诉讼过程中或者裁判生效后再次就此提起诉讼的，构成重复诉讼。</data>
+      <data key="d1">passage</data>
+    </node>
+    <node id="ddc809b3ba36e1ca780cfca94e6d3fd49881897a81b6d26c67d88f566efe9445">
+      <data key="d2">concept_file</data>
+      <data key="d0">司法判断</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="a995f9805b118ea177b7aa136effa163baa7d586c30899a1d71ef5167a352760">
+      <data key="d2">concept_file</data>
+      <data key="d0">侵权行为</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="877f63f08787e65b250f21731eae46bab5a5cab603b0cf7d62070e9892d3679c">
+      <data key="d2">concept_file</data>
+      <data key="d0">商业机密</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="e60ac25a5279de83d0a198ff8b64773c717f25cd4221188aff4c20cdf318bcef">
+      <data key="d2">concept_file</data>
+      <data key="d0">法律主体</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="55da02ecc003ab6ee48f46f38a77a47406576e588879c7a9d01977199f19338a">
+      <data key="d2">concept_file</data>
+      <data key="d0">利益方</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="720c7095a4885efd2f61b720074e2d625e24d1f9a40678f9bc604aa1638d7cb6">
+      <data key="d2">concept_file</data>
+      <data key="d0">权利争议</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="6b0c1338407adcf88f6a46d11e27f74d5ca3f7bcc0c7e1e9d4c6d4a0f521e27f">
+      <data key="d2">concept_file</data>
+      <data key="d0">知识产权</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="4a0b5b2380d6bc96a05681dbb35e3cfd8281b48fe64f3fe0ab4da928acd12796">
+      <data key="d2">concept_file</data>
+      <data key="d0">相关方</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="5e865cba168bb97fe9f1780add45d74858dfba3d97ac5e0475119a42706a66cf">
+      <data key="d2">concept_file</data>
+      <data key="d0">权利方</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="aba9de34a9d0c245759d2091c74f4514d1d624e36e66193d65875f7d10c32e63">
+      <data key="d2">concept_file</data>
+      <data key="d0">法律程序</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="aeb10be58a8f6a14ba6779789b7e22a12beadca9569e613bf4a3059920552fdb">
+      <data key="d2">concept_file</data>
+      <data key="d0">法律纠纷</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="ac7935720ad3024330245310779b877e50329951702f815f056336c4a1c47ea5">
+      <data key="d2">concept_file</data>
+      <data key="d0">权利拥有者</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="2ad9ed2eefed082cb01f488744f5b203df64295e3688a86b0af79dfc10329357">
+      <data key="d2">concept_file</data>
+      <data key="d0">当事人</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="b75cc20633ab333bf7db8f75ebd81292938f9374ad70c9620ffb0d5147487f8b">
+      <data key="d2">concept_file</data>
+      <data key="d0">对方</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="307085b1d42fdce676f19d634466f4d2a18987d158f49a8d062b84f9f0ee0f50">
+      <data key="d2">concept_file</data>
+      <data key="d0">诉讼类型</data>
+      <data key="d1">concept</data>
+    </node>
+    <node id="883ae0b3ae1bbab0e8dec8fda36bfc4c2aafc8afd01db3441d6e86eb07e93309">
+      <data key="d2">concept_file</data>
+      <data key="d0">权益持有者</data>
+      <data key="d1">concept</data>
+    </node>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed">
+      <data key="d3">构成</data>
+      <data key="d4">Relation</data>
+      <data key="d5">组合,合成,构成,整合,组成</data>
+    </edge>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d3">mention in</data>
+      <data key="d4">Source</data>
+    </edge>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="877f63f08787e65b250f21731eae46bab5a5cab603b0cf7d62070e9892d3679c">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="aeb10be58a8f6a14ba6779789b7e22a12beadca9569e613bf4a3059920552fdb">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="6b0c1338407adcf88f6a46d11e27f74d5ca3f7bcc0c7e1e9d4c6d4a0f521e27f">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940" target="a995f9805b118ea177b7aa136effa163baa7d586c30899a1d71ef5167a352760">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed" target="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d3">mention in</data>
+      <data key="d4">Source</data>
+    </edge>
+    <edge source="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed" target="aba9de34a9d0c245759d2091c74f4514d1d624e36e66193d65875f7d10c32e63">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed" target="307085b1d42fdce676f19d634466f4d2a18987d158f49a8d062b84f9f0ee0f50">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed" target="ddc809b3ba36e1ca780cfca94e6d3fd49881897a81b6d26c67d88f566efe9445">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="beae50f13259b79986d6db0ecd0001469c890dee43eb5f952e8b9a240d6504ed" target="720c7095a4885efd2f61b720074e2d625e24d1f9a40678f9bc604aa1638d7cb6">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340">
+      <data key="d3">提起诉讼</data>
+      <data key="d4">Relation</data>
+      <data key="d5">控告,起诉,诉讼提起</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="c343f9fd7f6c38d7a5013150e80b222bb0f6dda67dfc1e5748427fa845caf940">
+      <data key="d3">再次提起诉讼</data>
+      <data key="d4">Relation</data>
+      <data key="d5">重新起诉,重提诉讼,再起诉,二次诉讼</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d3">mention in</data>
+      <data key="d4">Source</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="ac7935720ad3024330245310779b877e50329951702f815f056336c4a1c47ea5">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="e60ac25a5279de83d0a198ff8b64773c717f25cd4221188aff4c20cdf318bcef">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="1822ba17b297d5f6a4e5e3497c08a639925cef62b4518c01c04d30b694030795" target="883ae0b3ae1bbab0e8dec8fda36bfc4c2aafc8afd01db3441d6e86eb07e93309">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340" target="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775">
+      <data key="d3">向...披露技术秘密信息</data>
+      <data key="d4">Relation</data>
+      <data key="d5">公开,泄密,披露秘密</data>
+    </edge>
+    <edge source="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340" target="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d3">mention in</data>
+      <data key="d4">Source</data>
+    </edge>
+    <edge source="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340" target="e60ac25a5279de83d0a198ff8b64773c717f25cd4221188aff4c20cdf318bcef">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340" target="2ad9ed2eefed082cb01f488744f5b203df64295e3688a86b0af79dfc10329357">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="e713a31ba70e5e1f1070bca95f410de7ea9c8b77066ed72f795c800ead454340" target="5e865cba168bb97fe9f1780add45d74858dfba3d97ac5e0475119a42706a66cf">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775" target="008bbf0c6b06cbcff0d6f31670ada377dc105ff571b5c520840e09f00a5a2d6b">
+      <data key="d3">mention in</data>
+      <data key="d4">Source</data>
+    </edge>
+    <edge source="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775" target="b75cc20633ab333bf7db8f75ebd81292938f9374ad70c9620ffb0d5147487f8b">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775" target="4a0b5b2380d6bc96a05681dbb35e3cfd8281b48fe64f3fe0ab4da928acd12796">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775" target="55da02ecc003ab6ee48f46f38a77a47406576e588879c7a9d01977199f19338a">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+    <edge source="4e7b9a93fdf46e2bb20bdf651dba0e9809974d9db0b30e142a5285302a222775" target="2ad9ed2eefed082cb01f488744f5b203df64295e3688a86b0af79dfc10329357">
+      <data key="d3">has_concept</data>
+      <data key="d4">Concept</data>
+    </edge>
+  </graph>
+</graphml>
