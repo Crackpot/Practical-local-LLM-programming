@@ -20,25 +20,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*******************************************************************************
    Drop Tables
 ********************************************************************************/
@@ -74,7 +55,7 @@ CREATE TABLE [Album]
     [Title] NVARCHAR(160)  NOT NULL,
     [ArtistId] INTEGER  NOT NULL,
     CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),
-    FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) 
+    FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -101,7 +82,7 @@ CREATE TABLE [Customer]
     [Email] NVARCHAR(60)  NOT NULL,
     [SupportRepId] INTEGER,
     CONSTRAINT [PK_Customer] PRIMARY KEY  ([CustomerId]),
-    FOREIGN KEY ([SupportRepId]) REFERENCES [Employee] ([EmployeeId]) 
+    FOREIGN KEY ([SupportRepId]) REFERENCES [Employee] ([EmployeeId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -123,7 +104,7 @@ CREATE TABLE [Employee]
     [Fax] NVARCHAR(24),
     [Email] NVARCHAR(60),
     CONSTRAINT [PK_Employee] PRIMARY KEY  ([EmployeeId]),
-    FOREIGN KEY ([ReportsTo]) REFERENCES [Employee] ([EmployeeId]) 
+    FOREIGN KEY ([ReportsTo]) REFERENCES [Employee] ([EmployeeId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -146,7 +127,7 @@ CREATE TABLE [Invoice]
     [BillingPostalCode] NVARCHAR(10),
     [Total] NUMERIC(10,2)  NOT NULL,
     CONSTRAINT [PK_Invoice] PRIMARY KEY  ([InvoiceId]),
-    FOREIGN KEY ([CustomerId]) REFERENCES [Customer] ([CustomerId]) 
+    FOREIGN KEY ([CustomerId]) REFERENCES [Customer] ([CustomerId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -158,9 +139,9 @@ CREATE TABLE [InvoiceLine]
     [UnitPrice] NUMERIC(10,2)  NOT NULL,
     [Quantity] INTEGER  NOT NULL,
     CONSTRAINT [PK_InvoiceLine] PRIMARY KEY  ([InvoiceLineId]),
-    FOREIGN KEY ([InvoiceId]) REFERENCES [Invoice] ([InvoiceId]) 
+    FOREIGN KEY ([InvoiceId]) REFERENCES [Invoice] ([InvoiceId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) 
+    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -183,9 +164,9 @@ CREATE TABLE [PlaylistTrack]
     [PlaylistId] INTEGER  NOT NULL,
     [TrackId] INTEGER  NOT NULL,
     CONSTRAINT [PK_PlaylistTrack] PRIMARY KEY  ([PlaylistId], [TrackId]),
-    FOREIGN KEY ([PlaylistId]) REFERENCES [Playlist] ([PlaylistId]) 
+    FOREIGN KEY ([PlaylistId]) REFERENCES [Playlist] ([PlaylistId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) 
+    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -201,11 +182,11 @@ CREATE TABLE [Track]
     [Bytes] INTEGER,
     [UnitPrice] NUMERIC(10,2)  NOT NULL,
     CONSTRAINT [PK_Track] PRIMARY KEY  ([TrackId]),
-    FOREIGN KEY ([AlbumId]) REFERENCES [Album] ([AlbumId]) 
+    FOREIGN KEY ([AlbumId]) REFERENCES [Album] ([AlbumId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY ([GenreId]) REFERENCES [Genre] ([GenreId]) 
+    FOREIGN KEY ([GenreId]) REFERENCES [Genre] ([GenreId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY ([MediaTypeId]) REFERENCES [MediaType] ([MediaTypeId]) 
+    FOREIGN KEY ([MediaTypeId]) REFERENCES [MediaType] ([MediaTypeId])
 		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -934,7 +915,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (26, 'What It Takes', 5, 1, 1, 'Steven Tyler, Joe Perry, Desmond Child', 310622, 10144730, 0.99),
     (27, 'Dude (Looks Like A Lady)', 5, 1, 1, 'Steven Tyler, Joe Perry, Desmond Child', 264855, 8679940, 0.99),
     (28, 'Janie''s Got A Gun', 5, 1, 1, 'Steven Tyler, Tom Hamilton', 330736, 10869391, 0.99),
-    (29, 'Cryin''', 5, 1, 1, 'Steven Tyler, Joe Perry, Taylor Rhodes', 309263, 10056995, 0.99),
+    (29, 'Cryin""", 5, 1, 1, 'Steven Tyler, Joe Perry, Taylor Rhodes', 309263, 10056995, 0.99),
     (30, 'Amazing', 5, 1, 1, 'Steven Tyler, Richie Supa', 356519, 11616195, 0.99),
     (31, 'Blind Man', 5, 1, 1, 'Steven Tyler, Joe Perry, Taylor Rhodes', 240718, 7877453, 0.99),
     (32, 'Deuces Are Wild', 5, 1, 1, 'Steven Tyler, Jim Vallance', 215875, 7074167, 0.99),
@@ -1506,8 +1487,8 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (598, 'Jeru', 48, 1, 2, 'Miles Davis', 193410, 6222536, 0.99),
     (599, 'Compulsion', 48, 1, 2, 'Miles Davis', 345025, 11254474, 0.99),
     (600, 'Tempus Fugit', 48, 1, 2, 'Miles Davis', 231784, 7548434, 0.99),
-    (601, 'Walkin''', 48, 1, 2, 'Miles Davis', 807392, 26411634, 0.99),
-    (602, '''Round Midnight', 48, 1, 2, 'Miles Davis', 357459, 11590284, 0.99),
+    (601, 'Walkin""", 48, 1, 2, 'Miles Davis', 807392, 26411634, 0.99),
+    (602, """Round Midnight', 48, 1, 2, 'Miles Davis', 357459, 11590284, 0.99),
     (603, 'Bye Bye Blackbird', 48, 1, 2, 'Miles Davis', 476003, 15549224, 0.99),
     (604, 'New Rhumba', 48, 1, 2, 'Miles Davis', 277968, 9018024, 0.99),
     (605, 'Generique', 48, 1, 2, 'Miles Davis', 168777, 5437017, 0.99),
@@ -1525,7 +1506,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (617, 'Jean Pierre (Live)', 49, 1, 2, 'Miles Davis', 243461, 7955114, 0.99),
     (618, 'Time After Time', 49, 1, 2, 'Miles Davis', 220734, 7292197, 0.99),
     (619, 'Portia', 49, 1, 2, 'Miles Davis', 378775, 12520126, 0.99),
-    (620, 'Space Truckin''', 50, 1, 1, 'Blackmore/Gillan/Glover/Lord/Paice', 1196094, 39267613, 0.99),
+    (620, 'Space Truckin""", 50, 1, 1, 'Blackmore/Gillan/Glover/Lord/Paice', 1196094, 39267613, 0.99),
     (621, 'Going Down / Highway Star', 50, 1, 1, 'Gillan/Glover/Lord/Nix - Blackmore/Paice', 913658, 29846063, 0.99),
     (622, 'Mistreated (Alternate Version)', 50, 1, 1, 'Blackmore/Coverdale', 854700, 27775442, 0.99),
     (623, 'You Fool No One (Alternate Version)', 50, 1, 1, 'Blackmore/Coverdale/Lord/Paice', 763924, 24887209, 0.99),
@@ -1690,7 +1671,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (782, 'Never Before', 62, 1, 1, 'Ian Gillan/Ian Paice/Jon Lord/Ritchie Blckmore/Roger Glover', 239830, 7832790, 0.99),
     (783, 'Smoke On The Water', 62, 1, 1, 'Ian Gillan/Ian Paice/Jon Lord/Ritchie Blckmore/Roger Glover', 340871, 11246496, 0.99),
     (784, 'Lazy', 62, 1, 1, 'Ian Gillan/Ian Paice/Jon Lord/Ritchie Blckmore/Roger Glover', 442096, 14397671, 0.99),
-    (785, 'Space Truckin''', 62, 1, 1, 'Ian Gillan/Ian Paice/Jon Lord/Ritchie Blckmore/Roger Glover', 272796, 8981030, 0.99),
+    (785, 'Space Truckin""", 62, 1, 1, 'Ian Gillan/Ian Paice/Jon Lord/Ritchie Blckmore/Roger Glover', 272796, 8981030, 0.99),
     (786, 'Vavoom : Ted The Mechanic', 63, 1, 1, 'Ian Gillan, Roger Glover, Jon Lord, Steve Morse, Ian Paice', 257384, 8510755, 0.99),
     (787, 'Loosen My Strings', 63, 1, 1, 'Ian Gillan, Roger Glover, Jon Lord, Steve Morse, Ian Paice', 359680, 11702232, 0.99),
     (788, 'Soon Forgotten', 63, 1, 1, 'Ian Gillan, Roger Glover, Jon Lord, Steve Morse, Ian Paice', 287791, 9401383, 0.99),
@@ -1827,7 +1808,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (919, 'San Francisco Bay Blues', 73, 1, 6, 'Jesse Fuller', 203363, 6724021, 0.99),
     (920, 'Malted Milk', 73, 1, 6, 'Robert Johnson', 216528, 7096781, 0.99),
     (921, 'Old Love', 73, 1, 6, 'Eric Clapton, Robert Cray', 472920, 15780747, 0.99),
-    (922, 'Rollin'' And Tumblin''', 73, 1, 6, 'McKinley Morgenfield (Muddy Waters)', 251768, 8407355, 0.99),
+    (922, 'Rollin'' And Tumblin""", 73, 1, 6, 'McKinley Morgenfield (Muddy Waters)', 251768, 8407355, 0.99),
     (923, 'Collision', 74, 1, 4, 'Jon Hudson/Mike Patton', 204303, 6656596, 0.99),
     (924, 'Stripsearch', 74, 1, 4, 'Jon Hudson/Mike Bordin/Mike Patton', 270106, 8861119, 0.99),
     (925, 'Last Cup Of Sorrow', 74, 1, 4, 'Bill Gould/Mike Patton', 251663, 8221247, 0.99),
@@ -2088,7 +2069,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (1178, 'Get In The Ring', 92, 1, 3, 'Duff McKagan/Slash/W. Axl Rose', 341054, 11134105, 0.99),
     (1179, 'Shotgun Blues', 92, 1, 3, 'W. Axl Rose', 203206, 6623916, 0.99),
     (1180, 'Breakdown', 92, 1, 3, 'W. Axl Rose', 424960, 13978284, 0.99),
-    (1181, 'Pretty Tied Up', 92, 1, 3, 'Izzy Stradlin''', 287477, 9408754, 0.99),
+    (1181, 'Pretty Tied Up', 92, 1, 3, 'Izzy Stradlin""", 287477, 9408754, 0.99),
     (1182, 'Locomotive', 92, 1, 3, 'Slash/W. Axl Rose', 522396, 17236842, 0.99),
     (1183, 'So Fine', 92, 1, 3, 'Duff McKagan', 246491, 8039484, 0.99),
     (1184, 'Estranged', 92, 1, 3, 'W. Axl Rose', 563800, 18343787, 0.99),
@@ -2456,11 +2437,11 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (1546, 'The Green Manalishi', 125, 1, 3, NULL, 205792, 6720789, 0.99),
     (1547, 'Living After Midnight', 125, 1, 3, NULL, 213289, 7056785, 0.99),
     (1548, 'Breaking The Law (Live)', 125, 1, 3, NULL, 144195, 4728246, 0.99),
-    (1549, 'Hot Rockin''', 125, 1, 3, NULL, 197328, 6509179, 0.99),
+    (1549, 'Hot Rockin""", 125, 1, 3, NULL, 197328, 6509179, 0.99),
     (1550, 'Heading Out To The Highway (Live)', 125, 1, 3, NULL, 276427, 9006022, 0.99),
     (1551, 'The Hellion', 125, 1, 3, NULL, 41900, 1351993, 0.99),
     (1552, 'Electric Eye', 125, 1, 3, NULL, 222197, 7231368, 0.99),
-    (1553, 'You''ve Got Another Thing Comin''', 125, 1, 3, NULL, 305162, 9962558, 0.99),
+    (1553, 'You''ve Got Another Thing Comin""", 125, 1, 3, NULL, 305162, 9962558, 0.99),
     (1554, 'Turbo Lover', 125, 1, 3, NULL, 335542, 11068866, 0.99),
     (1555, 'Freewheel Burning', 125, 1, 3, NULL, 265952, 8713599, 0.99),
     (1556, 'Some Heads Are Gonna Roll', 125, 1, 3, NULL, 249939, 8198617, 0.99),
@@ -2681,7 +2662,7 @@ INSERT INTO [Track] ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Co
     (1771, 'Segue O Seco', 145, 1, 7, 'Caetano Veloso e Gilberto Gil', 178207, 5922018, 0.99),
     (1772, 'O Xote Das Meninas', 145, 1, 7, 'Caetano Veloso e Gilberto Gil', 291866, 9553228, 0.99),
     (1773, 'Wherever I Lay My Hat', 146, 1, 14, NULL, 136986, 4477321, 0.99),
-    (1774, 'Get My Hands On Some Lovin''', 146, 1, 14, NULL, 149054, 4860380, 0.99),
+    (1774, 'Get My Hands On Some Lovin""", 146, 1, 14, NULL, 149054, 4860380, 0.99),
     (1775, 'No Good Without You', 146, 1, 14, 'William "Mickey" Stevenson', 161410, 5259218, 0.99),
     (1776, 'You''ve Been A Long Time Coming', 146, 1, 14, 'Brian Holland/Eddie Holland/Lamont Dozier', 137221, 4437949, 0.99),
     (1777, 'When I Had Your Love', 146, 1, 14, 'Robert Rogers/Warren "Pete" Moore/William "Mickey" Stevenson', 152424, 4972815, 0.99),
@@ -15899,4 +15880,3 @@ INSERT INTO [PlaylistTrack] ([PlaylistId], [TrackId]) VALUES
     (17, 2096),
     (17, 3290),
     (18, 597);
-

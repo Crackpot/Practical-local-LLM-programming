@@ -192,7 +192,7 @@ Cypher query:"""
     ]
 )
 
-llm_qwen = ChatOllama(model="qwen2.5",temperature=0, verbose=True)
+llm_qwen = ChatOllama(model="qwen3.5",temperature=0, verbose=True)
 
 text2cypher_chain = text2cypher_prompt | llm_qwen | StrOutputParser()
 

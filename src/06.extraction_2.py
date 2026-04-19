@@ -11,7 +11,12 @@
 
 # Reference examples
 
+from typing import Optional
+
+from langchain_core.utils.function_calling import tool_example_to_messages
 from langchain_ollama import ChatOllama
+from pydantic import BaseModel, Field
+
 
 def reference(model_name):
     messages = [
@@ -22,11 +27,9 @@ def reference(model_name):
         {"role": "user", "content": "3 🦜 4"},
     ]
 
-    response = ChatOllama(model=model_name,temperature=0.5,verbose=True).invoke(messages)
+    response = ChatOllama(model=model_name, temperature=0.5, verbose=True).invoke(messages)
     return response.content
 
-from typing import Optional
-from pydantic import BaseModel, Field
 
 class Person(BaseModel):
     """Information about a person."""
@@ -47,7 +50,6 @@ class Person(BaseModel):
         default=None, description="Height measured in meters"
     )
 
-from langchain_core.utils.function_calling import tool_example_to_messages
 
 examples = [
     (
@@ -77,49 +79,52 @@ for txt, tool_call in examples:
 for message in messages:
     message.pretty_print()
 
-def extract(model_name,text):
-    structured_llm = ChatOllama(model=model_name,temperature=0,verbose=True).with_structured_output(schema=Person)  
-    user_message = {"role": "user", "content":text}
+
+def extract(model_name, text):
+    structured_llm = ChatOllama(model=model_name, temperature=0, verbose=True).with_structured_output(schema=Person)
+    user_message = {"role": "user", "content": text}
     response = structured_llm.invoke([user_message])
     return response
 
-def extract_with_messages(model_name,text):
-    structured_llm = ChatOllama(model=model_name,temperature=0,verbose=True).with_structured_output(schema=Person)  
-    user_message = {"role": "user", "content":text}
+
+def extract_with_messages(model_name, text):
+    structured_llm = ChatOllama(model=model_name, temperature=0, verbose=True).with_structured_output(schema=Person)
+    user_message = {"role": "user", "content": text}
     structured_llm.invoke(messages + [user_message])
     return response
 
+
 if __name__ == '__main__':
-    '''
+    """
     response = reference("llama3.1")
     print(f'\n llama3.1 response:\n{response}')
 
     response = reference("MFDoom/deepseek-r1-tool-calling:7b")
-    print(f'\n deepseek-r1 response:\n{response}')
-    '''
+    print(f'\n deepseek-r1:14b response:\n{response}')
+    """
     print('-----------------------llama-------------------------------')
     text = "Roy is 1.73 meters tall and has black hair."
-    response = extract("llama3.1",text)
+    response = extract("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
-    response = extract_with_messages("llama3.1",text)
+    response = extract_with_messages("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
     text = "John Doe is 1.72 meters tall and has brown hair."
-    response = extract("llama3.1",text)
+    response = extract("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
-    response = extract_with_messages("llama3.1",text)
+    response = extract_with_messages("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
     print('-----------------------deepseek-------------------------------')
 
     text = "Roy is 1.73 meters tall and has black hair."
-    response = extract("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = extract("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n deepseek response:\n{response}')
-    response = extract_with_messages("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = extract_with_messages("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n deepseek response:\n{response}')
 
     text = "John Doe is 1.72 meters tall and has brown hair."
-    response = extract("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = extract("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n llama3.1 response:\n{response}')
-    response = extract_with_messages("llama3.1",text)
+    response = extract_with_messages("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')

@@ -1,13 +1,19 @@
-#coding=utf-8
+# coding=utf-8
 
-#!/usr/bin/python
+# !/usr/bin/python
 # -*- coding:utf-8 -*-
 # @author  : 刘立军
 # @time    : 2025-01-07
 # @Description: 利用本地大模型测试矢量数据库
 # @version : V0.5
 
+from langchain_chroma import Chroma
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables import RunnablePassthrough
+from langchain_ollama import ChatOllama
 
 # 使用 nomic-embed-text 做嵌入检索很好，使用 llama3.1 效果一般
 documents = [
@@ -57,29 +63,26 @@ documents_zh = [
     ),
 ]
 
-from langchain_chroma import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
-
 # nomic-embed-text  llama3.1    EntropyYue/chatglm3
 embeddings_model = OllamaEmbeddings(model="nomic-embed-text")
 """
 nomic-embed-text: 一个高性能开放嵌入模型，只有27M，具有较大的标记上下文窗口。
 在做英文的嵌入和检索时，明显比llama3.1要好，可惜做中文不行。
-"""    
+"""
 
-from langchain_ollama import ChatOllama
-llm = ChatOllama(model="llama3.1",temperature=0.3,verbose=True)
+llm = ChatOllama(model="llama3.1", temperature=0.3, verbose=True)
 """
 temperature：用于控制生成语言模型中生成文本的随机性和创造性。
 当temperature值较低时，模型倾向于选择概率较高的词，生成的文本更加保守和可预测，但可能缺乏多样性和创造性。
 当temperature值较高时，模型选择的词更加多样化，可能会生成更加创新和意想不到的文本，但也可能引入语法错误或不相关的内容。
 当需要模型生成明确、唯一的答案时，例如解释某个概念，较低的temperature值更为合适；如果目标是为了产生创意或完成故事，较高的temperature值可能更有助于生成多样化和有趣的文本。
 """
- 
+
 vectorstore = Chroma.from_documents(
     documents_zh,
     embedding=embeddings_model,
 )
+
 
 def search():
     """
@@ -101,8 +104,6 @@ def search():
     vectorstore.similarity_search_by_vector(embedding)
 
 
-from langchain_core.runnables import RunnableLambda
-
 def retriever():
     """
     retriever测试
@@ -121,11 +122,9 @@ def retriever():
         search_kwargs={"k": 1},
     )
 
-    r= retriever.batch(["cat", "shark"])
+    r = retriever.batch(["cat", "shark"])
     print(f'as_retriever.batch:{r}')
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 
 def RAG(question):
     """
@@ -145,18 +144,17 @@ def RAG(question):
         search_type="similarity",
         search_kwargs={"k": 1},
     )
-    
+
     rag_chain = {"context": retriever, "question": RunnablePassthrough()} | prompt | llm
     response = rag_chain.invoke({"question": question})
 
     # print(response.content)
     return response.content
 
-if __name__ == '__main__':
 
-    #search()
-    #retriever()
+if __name__ == '__main__':
+    search()
+    retriever()
 
     # 使用 nomic-embed-text 可以正确处理，使用llama3.1 失败。
     print(RAG("tell me about cats"))
-

@@ -8,15 +8,21 @@
 
 # https://python.langchain.com/docs/how_to/tool_runtime/
 
+# 在运行时注入参数
+from copy import deepcopy
 from typing import List
-from typing_extensions import Annotated
+
+from langchain_core.runnables import chain
 from langchain_core.tools import InjectedToolArg, tool
+from langchain_ollama import ChatOllama
+from typing_extensions import Annotated
 
 user_to_pets = {}
 
+
 @tool(parse_docstring=True)
 def update_favorite_pets(
-    pets: List[str], user_id: Annotated[str, InjectedToolArg]
+        pets: List[str], user_id: Annotated[str, InjectedToolArg]
 ) -> None:
     """添加或者更新最喜爱的宠物列表。
 
@@ -50,6 +56,7 @@ def list_favorite_pets(user_id: Annotated[str, InjectedToolArg]) -> None:
     print(f'list_favorite_pets is called:{user_id}')
     return user_to_pets.get(user_id, [])
 
+
 def test_tool():
     """测试工具"""
 
@@ -64,6 +71,7 @@ def test_tool():
     print(f'user_to_pets:{user_to_pets}')
     print(f'list_favorite_pets.invoke:{list_favorite_pets.invoke({"user_id": user_id})}')
 
+
 # 当模型调用该工具时，不会生成任何 user_id 参数/实参
 tools = [
     update_favorite_pets,
@@ -71,12 +79,11 @@ tools = [
     list_favorite_pets,
 ]
 
-from langchain_ollama import ChatOllama
 
-def invoke_tool(model_name,query):
+def invoke_tool(model_name, query):
     """测试生成的tool_call"""
 
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
 
     ai_msg = llm_with_tools.invoke(query)
@@ -84,12 +91,9 @@ def invoke_tool(model_name,query):
 
     return ai_msg
 
-# 在运行时注入参数
-from copy import deepcopy
 
-from langchain_core.runnables import chain
+user_id = "u123"
 
-user_id ="u123"
 
 @chain
 def inject_user_id(ai_msg):
@@ -100,22 +104,25 @@ def inject_user_id(ai_msg):
         tool_calls.append(tool_call_copy)
     return tool_calls
 
-def test_inject_user_id(model_name,query):
-    ai_msg = invoke_tool(model_name,query)
+
+def test_inject_user_id(model_name, query):
+    ai_msg = invoke_tool(model_name, query)
     new_args = inject_user_id.invoke(ai_msg)
     print(f'inject_user_id:\n{new_args}')
 
 
 tool_map = {tool.name: tool for tool in tools}
 
+
 @chain
 def tool_router(tool_call):
     return tool_map[tool_call["name"]]
 
-def execute_tool(model_name,query):
+
+def execute_tool(model_name, query):
     """调用工具，返回结果"""
 
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
 
     # 将模型、注入用户ID代码和实际的工具链接在一起，创建工具执行链
@@ -125,17 +132,16 @@ def execute_tool(model_name,query):
     print(f'chain.invoke:\n{result}')
     print(f'now user_to_pets :\n{user_to_pets}')
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     test_tool()
 
     query = "刘大军最喜欢的动物是狗和蜥蜴。"
-    invoke_tool('llama3.1',query)
-    invoke_tool('MFDoom/deepseek-r1-tool-calling:7b',query)
+    invoke_tool('llama3.1', query)
+    invoke_tool('MFDoom/deepseek-r1-tool-calling:7b', query)
 
-    test_inject_user_id('llama3.1',query)
-    test_inject_user_id('MFDoom/deepseek-r1-tool-calling:7b',query)
+    test_inject_user_id('llama3.1', query)
+    test_inject_user_id('MFDoom/deepseek-r1-tool-calling:7b', query)
 
-    execute_tool('llama3.1',query)
-    execute_tool('MFDoom/deepseek-r1-tool-calling:7b',query)
-    
+    execute_tool('llama3.1', query)
+    execute_tool('MFDoom/deepseek-r1-tool-calling:7b', query)

@@ -4,16 +4,24 @@
 # @date    : 2025-04-28
 # @description: 演示SSE的使用
 
-llm_model_name = "qwen3"
+llm_model_name = "qwen3.5"
 
 import os
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_ollama import ChatOllama
-from langchain_core.messages import SystemMessage,HumanMessage,AIMessage
+from pydantic import BaseModel, Field
+from sse_starlette.sse import EventSourceResponse
 
 """
 1. 构建提示词
 """
-def build_prompt(language_dst:str,text:str):
+
+
+def build_prompt(language_dst: str, text: str):
     """构建提示词
     在不指定源语言的情况下，LLM也可以翻译。
     """
@@ -24,19 +32,21 @@ def build_prompt(language_dst:str,text:str):
         {text}
         翻译："""
     return [
-        SystemMessage(content =prompt_sysytem),
+        SystemMessage(content=prompt_sysytem),
         HumanMessage(content=prompt_user)
     ]
+
 
 """
 2. 大模型流式响应
 """
-model = ChatOllama(model=llm_model_name,temperature=0.2,verbose=True)
+model = ChatOllama(model=llm_model_name, temperature=0.2, verbose=True)
 
-def stream_generator(language_dst:str,text:str):
+
+def stream_generator(language_dst: str, text: str):
     """流式输出大模型的回答"""
-    prompt = build_prompt(language_dst=language_dst,text=text)
-    inside_think = False # 标记是否在<think>区间
+    prompt = build_prompt(language_dst=language_dst, text=text)
+    inside_think = False  # 标记是否在<think>区间
     for chunk in model.stream(prompt):
         if isinstance(chunk, AIMessage):
             # 过滤掉<think>...</think>部分            
@@ -44,7 +54,7 @@ def stream_generator(language_dst:str,text:str):
                 inside_think = True
             elif "</think>" in chunk.content:
                 inside_think = False
-                continue    # 跳过 </think>
+                continue  # 跳过 </think>
 
             if not inside_think:
                 yield {
@@ -56,28 +66,27 @@ def stream_generator(language_dst:str,text:str):
         "data": "[[END]]"
     }
 
+
 """
 3. 定义接口
 """
 
-from pydantic import BaseModel,Field
 
 class TranslateRequest(BaseModel):
     """请求消息体"""
     text: str = Field(..., min_length=1, description="要翻译的文本")
     language_dst: str = Field(..., min_length=1, description="目标语言")
 
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from sse_starlette.sse import EventSourceResponse
 
 app = FastAPI(title="翻译接口")
 
-@app.post("/translate_stream",tags=["接口"],summary="翻译接口，流式返回内容")
-async def stream_translation(req: TranslateRequest):
-    return EventSourceResponse(stream_generator(language_dst=req.language_dst,text=req.text))
 
-@app.get("/translate",tags=["测试客户端"],summary="返回翻译的前端界面")
+@app.post("/translate_stream", tags=["接口"], summary="翻译接口，流式返回内容")
+async def stream_translation(req: TranslateRequest):
+    return EventSourceResponse(stream_generator(language_dst=req.language_dst, text=req.text))
+
+
+@app.get("/translate", tags=["测试客户端"], summary="返回翻译的前端界面")
 async def get_translate_html():
     """返回翻译页面
     """
@@ -87,12 +96,11 @@ async def get_translate_html():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-import uvicorn
 
 if __name__ == '__main__':
     """交互式API文档地址：
-    http://127.0.0.1:9000/docs/
-    http://127.0.0.1:9000/redoc/
+    http://127.0.0.1:9010/docs/
+    http://127.0.0.1:9010/redoc/
     """
-   
-    uvicorn.run(app, host="127.0.0.1", port=9000)
+
+    uvicorn.run(app, host="127.0.0.1", port=9010)

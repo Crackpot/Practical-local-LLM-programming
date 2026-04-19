@@ -5,14 +5,20 @@
 # @function: 用langgraph实现的chatbot
 # @version : V0.5
 
-from langchain_ollama import ChatOllama
+from typing import Sequence
+
+from langchain_core.messages import BaseMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
+from langgraph.graph.message import add_messages
+from typing_extensions import Annotated, TypedDict
 
 
 def build_app_with_prompt_1(model_name):
-    model = ChatOllama(model=model_name,temperature=0.3,verbose=True)
+    model = ChatOllama(model=model_name, temperature=0.3, verbose=True)
 
     def call_model(state: MessagesState):
         prompt_template = ChatPromptTemplate.from_messages(
@@ -24,8 +30,8 @@ def build_app_with_prompt_1(model_name):
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
-        
-        prompt = prompt_template.invoke(state)        
+
+        prompt = prompt_template.invoke(state)
         response = model.invoke(prompt)
         return {"messages": response}
 
@@ -37,7 +43,6 @@ def build_app_with_prompt_1(model_name):
     app = workflow.compile(checkpointer=memory)
     return app
 
-from langchain_core.messages import HumanMessage
 
 def test_app_1(model_name):
     app = build_app_with_prompt_1(model_name)
@@ -55,10 +60,6 @@ def test_app_1(model_name):
     output = app.invoke({"messages": input_messages}, config)
     print(output["messages"][-1].pretty_print())
 
-from typing import Sequence
-from langchain_core.messages import BaseMessage
-from langgraph.graph.message import add_messages
-from typing_extensions import Annotated, TypedDict
 
 #  added a new language input to the prompt
 prompt_template = ChatPromptTemplate.from_messages(
@@ -71,12 +72,14 @@ prompt_template = ChatPromptTemplate.from_messages(
     ]
 )
 
+
 class State(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     language: str
 
+
 def build_app_with_prompt_2(model_name):
-    model = ChatOllama(model=model_name,temperature=0.3,verbose=True)
+    model = ChatOllama(model=model_name, temperature=0.3, verbose=True)
 
     def call_model(state: State):
         prompt = prompt_template.invoke(state)
@@ -91,13 +94,14 @@ def build_app_with_prompt_2(model_name):
     app = workflow.compile(checkpointer=memory)
     return app
 
+
 def test_app_2(model_name):
     app = build_app_with_prompt_2(model_name)
 
     config = {"configurable": {"thread_id": "abc456"}}
     language = "简体中文"
 
-    query = "嘿，你好，我是刘大山。"    
+    query = "嘿，你好，我是刘大山。"
 
     input_messages = [HumanMessage(query)]
     output = app.invoke(
@@ -115,11 +119,12 @@ def test_app_2(model_name):
     )
     print(output["messages"][-1].pretty_print())
 
+
 if __name__ == '__main__':
     mode_name = "llama3.1"
-    #test_app_1(mode_name)
+    # test_app_1(mode_name)
     test_app_2(mode_name)
 
-    mode_name = "deepseek-r1"
-    #test_app_1(mode_name)
+    mode_name = "deepseek-r1:14b"
+    # test_app_1(mode_name)
     test_app_2(mode_name)

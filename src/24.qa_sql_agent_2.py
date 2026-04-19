@@ -187,5 +187,5 @@ if __name__ == '__main__':
 
     print(retriever_tool.invoke("Itzhak Perlmam"))
     
-    test_model("qwen2.5")
+    test_model("qwen3.5")
     test_model("llama3.1")

@@ -4,15 +4,16 @@
 # @date    : 2025-09-11
 # @description: 演示faiss的使用
 
+import json
 import os
+from pathlib import Path
+
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
 # 启用下载进度条
 os.environ["TRANSFORMERS_PROGRESS_BAR"] = "1"
-
-import numpy as np
-import faiss
-import json
-from pathlib import Path
-from sentence_transformers import SentenceTransformer
 
 # ----------------------
 # 1. 数据结构设计：包含metadata
@@ -73,9 +74,9 @@ documents = [
 # 在 中文检索/相似度匹配 场景中，bge-m3 远超 all-MiniLM-L6-v2
 model = SentenceTransformer(
     'BAAI/bge-m3',
-    cache_folder=Path("./model")    # 模型会下载到这个目录，第一次执行会下载模型，比较慢。
+    cache_folder=Path("./model")  # 模型会下载到这个目录，第一次执行会下载模型，比较慢。
 )
-prefix = "为这个句子生成表示以用于检索相关句子：" 
+prefix = "为这个句子生成表示以用于检索相关句子："
 """
 在文本嵌入（Embedding）过程中添加特定前缀是指令微调（Instruction Tuning） 思想在嵌入模型中的应用，主要作用是引导模型生成更符合特定任务需求的向量表示，从而提升下游任务（如语义检索）的效果。
 当一个模型需要同时支持多种任务时，前缀可以作为 “任务标识符”：
@@ -92,23 +93,25 @@ if not data_folder_path.exists():
 index_path = data_folder_path / "faiss_index_with_metadata.index"
 metadata_path = data_folder_path / "metadata.json"
 
+
 # ----------------------
 # 3. 文本矢量化与metadata处理，存储索引及相关文件
 # ----------------------
 def process_documents(docs):
     # 提取文本并添加前缀
     texts = [prefix + doc["text"] for doc in docs]
-    
+
     # 生成向量
     embeddings = model.encode(
         texts,
         normalize_embeddings=True
     ).astype(np.float32)
-    
+
     # 提取metadata列表（保持与向量顺序一致）
     metadatas = [doc["metadata"] for doc in docs]
-    
+
     return embeddings, metadatas
+
 
 def create_db():
     """生成矢量库并保存"""
@@ -131,12 +134,14 @@ def create_db():
     # 保存metadata（使用JSON格式）
     with open(metadata_path, "w", encoding="utf-8") as f:
         json.dump(metadatas, f, ensure_ascii=False, indent=2)
-    
+
     print("\n数据保存完成：")
     print(f" - 索引: {index_path}")
     print(f" - Metadata: {metadata_path}")
 
+
 create_db()
+
 
 # ----------------------
 # 4. 加载矢量库（包含metadata）
@@ -144,18 +149,20 @@ create_db()
 def load_data():
     # 加载索引
     index = faiss.read_index(str(index_path))
-    
+
     # 加载metadata
     with open(metadata_path, "r", encoding="utf-8") as f:
         metadatas = json.load(f)
-    
+
     print("\n数据加载完成：")
     print(f" - 索引向量数量: {index.ntotal}")
     print(f" - Metadata数量: {len(metadatas)}")
-    
+
     return index, metadatas
 
+
 index, metadatas = load_data()
+
 
 # ----------------------
 # 5. 带metadata的语义检索
@@ -167,10 +174,10 @@ def search_with_metadata(query, top_k=2):
         [query_text],
         normalize_embeddings=True
     ).astype(np.float32)
-    
+
     # 搜索相似向量
     scores, indices = index.search(query_embedding, top_k)
-    
+
     # 关联metadata并返回结果
     results = []
     for i in range(top_k):
@@ -180,10 +187,11 @@ def search_with_metadata(query, top_k=2):
             "metadata": metadatas[idx],
             "text": documents[idx]["text"]  # 也可以从metadata中存储text
         })
-    
+
     return results
 
-if __name__ == '__main__':    
+
+if __name__ == '__main__':
 
     query = "什么是深度学习"
     results = search_with_metadata(query, top_k=2)

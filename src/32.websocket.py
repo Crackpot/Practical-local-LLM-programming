@@ -5,44 +5,48 @@
 # @function: 用websocket显示LLM的输出流
 # @version : V0.5
 
+import asyncio
+import os
+
+import uvicorn
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import HTMLResponse
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_ollama import ChatOllama
-from langchain_core.messages import HumanMessage,AIMessage
 
-model_name = "qwen3"
+model_name = "qwen3.5"
 
-llm = ChatOllama(model=model_name,temperature=0.3,verbose=True)
+llm = ChatOllama(model=model_name, temperature=0.3, verbose=True)
 
-def ask(question):  
 
+def ask(question):
     result = llm.invoke([HumanMessage(content=question)])
     return result.content
 
-import asyncio
-async def ask_stream(question,websocket=None):
+
+async def ask_stream(question, websocket=None):
     """与大模型聊天，流式输出"""
 
     for chunk in llm.stream([HumanMessage(content=question)]):
-        if isinstance(chunk, AIMessage) and chunk.content !='':
-            print(chunk.content,end="^")
+        if isinstance(chunk, AIMessage) and chunk.content != '':
+            print(chunk.content, end="^")
             if websocket is not None:
                 await websocket.send_json({"reply": chunk.content})
-                await asyncio.sleep(0.1)    # sleep一下后，前端就可以一点一点显示内容。
-            
-            
-import os
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+                await asyncio.sleep(0.1)  # sleep一下后，前端就可以一点一点显示内容。
+
 
 app = FastAPI()
+
 
 @app.get("/")
 async def get():
     """返回聊天页面"""
 
-    file_path = os.path.join(os.path.dirname(__file__), "chat.html")
+    file_path = os.path.join(os.path.dirname(__file__), "32.chat.html")
     with open(file_path, "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -52,7 +56,7 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_json()
             user_message = data.get("message", "")
             print(f"收到用户消息: {user_message}")
-            await ask_stream(user_message,websocket=websocket)
+            await ask_stream(user_message, websocket=websocket)
             """
             reply_message = ask(user_message)
             await websocket.send_json({"reply": reply_message})
@@ -60,10 +64,8 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         print(f"连接关闭: {e}")
 
-import uvicorn
 
 if __name__ == '__main__':
-
     # 交互式API文档地址：
     # http://127.0.0.1:8000/docs/ 
     # http://127.0.0.1:8000/redoc/

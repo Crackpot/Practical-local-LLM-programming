@@ -7,14 +7,24 @@
 
 # https://python.langchain.com/docs/tutorials/qa_chat_history/
 
-import os 
+import os
+
+from langchain_chroma import Chroma
+from langchain_core.messages import SystemMessage
+from langchain_core.tools import tool
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+from langgraph.graph import END
+from langgraph.graph import MessagesState, StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+
+from utils import show_graph
+
 os.environ['USER_AGENT'] = 'rag_graph_2'
 
 """
 确定文件路径
 """
-
-import sys
 
 # 当前文件的绝对路径
 current_file_path = os.path.abspath(__file__)
@@ -22,28 +32,30 @@ current_file_path = os.path.abspath(__file__)
 # 当前文件所在的目录
 current_dir = os.path.dirname(current_file_path)
 
+
 def get_persist_directory(model_name):
     """矢量数据库存储路径"""
-    model_name = model_name.replace(":","-")
-    return os.path.join(current_dir,f'assert/animals_{model_name}')
+    model_name = model_name.replace(":", "-")
+    return os.path.join(current_dir, f'assert/animals_{model_name}')
+
 
 """
 1. 创建矢量数据库对象
 """
 
-from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
-
 embed_model_name = "shaw/dmeta-embedding-zh"
-vector_store = Chroma(persist_directory=get_persist_directory(embed_model_name),embedding_function=OllamaEmbeddings(model=embed_model_name))
+vector_store = Chroma(
+    vectorstore_type="chroma",
+    persist_directory=get_persist_directory(embed_model_name),
+    embedding_function=OllamaEmbeddings(model=embed_model_name)
+)
 
 """
 2. 实现Langgraph 链
 """
 
-from langchain_core.tools import tool
 
-@tool(response_format="content_and_artifact",parse_docstring=True)      # docstring的内容对agent自动推理影响比较大
+@tool(response_format="content_and_artifact", parse_docstring=True)  # docstring的内容对agent自动推理影响比较大
 def retrieve(query: str):
     """检索与 query参数内容 相关的信息
 
@@ -71,19 +83,12 @@ def retrieve(query: str):
         return "抱歉，我找不到任何相关信息。", None
     else:
         return serialized, filtered_docs
-    
 
-from langchain_ollama import ChatOllama
-from langchain_core.messages import SystemMessage
-
-from langgraph.graph import MessagesState, StateGraph
-from langgraph.graph import END
-from langgraph.prebuilt import ToolNode, tools_condition
 
 def build_graph(llm_model_name):
     """构建 langgraph 链"""
-    
-    llm = ChatOllama(model=llm_model_name,temperature=0, verbose=True)
+
+    llm = ChatOllama(model=llm_model_name, temperature=0, verbose=True)
 
     # 1: 生成可能包含工具调用（tool_call）的 AIMessage。
     def query_or_respond(state: MessagesState):
@@ -127,7 +132,7 @@ def build_graph(llm_model_name):
             message
             for message in state["messages"]
             if message.type in ("human", "system")
-            or (message.type == "ai" and not message.tool_calls)
+               or (message.type == "ai" and not message.tool_calls)
         ]
         prompt = [SystemMessage(system_message_content)] + conversation_messages
 
@@ -155,29 +160,31 @@ def build_graph(llm_model_name):
     graph = graph_builder.compile()
     return graph
 
-def ask(llm_model_name,question):
+
+def ask(llm_model_name, question):
     """提问"""
 
     graph = build_graph(llm_model_name)
     for step in graph.stream(
-        {"messages": [{"role": "user", "content": question}]},
+            {"messages": [{"role": "user", "content": question}]},
             stream_mode="values",
-        ):
-            step["messages"][-1].pretty_print()
+    ):
+        step["messages"][-1].pretty_print()
+
 
 if __name__ == '__main__':
+    graph = build_graph("qwen3.5")
 
-    graph = build_graph("qwen2.5")
-
-    from utils import show_graph
     show_graph(graph)
 
     query1 = "马的学名是什么？它有什么用途？"
     query2 = "中国有多少个省份？"
 
-    ask("qwen2.5",query1)
-    ask("qwen2.5",query2)
-    ask("llama3.1",query1)
-    ask("llama3.1",query2)
-    ask("MFDoom/deepseek-r1-tool-calling:7b",query1)
-    ask("MFDoom/deepseek-r1-tool-calling:7b",query2)
+    ask("qwen3.5", query1)
+    ask("qwen3.5", query2)
+
+    ask("llama3.1", query1)
+    ask("llama3.1", query2)
+
+    ask("MFDoom/deepseek-r1-tool-calling:7b", query1)
+    ask("MFDoom/deepseek-r1-tool-calling:7b", query2)

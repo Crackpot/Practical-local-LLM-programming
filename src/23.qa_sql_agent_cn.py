@@ -107,6 +107,6 @@ def test_model(llm_model_name):
 
 if __name__ == '__main__':
 
-    test_model("qwen2.5")
+    test_model("qwen3.5")
     test_model("llama3.1")
     test_model("MFDoom/deepseek-r1-tool-calling:7b")

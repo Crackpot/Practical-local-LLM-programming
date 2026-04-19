@@ -21,7 +21,7 @@ loader = WebBaseLoader("http://wfcoding.com/articles/practice/03%E6%9C%AC%E5%9C%
 docs = loader.load()
 
 from langchain_ollama import ChatOllama
-llm = ChatOllama(model="qwen2.5",temperature=0.3, verbose=True)
+llm = ChatOllama(model="qwen3.5",temperature=0.3, verbose=True)
 # llama3.1 不能执行此任务
 #llm = ChatOllama(model="llama3.1",temperature=0.3, verbose=True)
 

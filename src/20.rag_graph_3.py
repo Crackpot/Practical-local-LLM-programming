@@ -7,14 +7,26 @@
 
 # https://python.langchain.com/docs/tutorials/qa_chat_history/
 
-import os 
+import os
+
+from langchain_chroma import Chroma
+from langchain_core.messages import SystemMessage
+from langchain_core.tools import tool
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import MessagesState, StateGraph, END
+from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.prebuilt import create_react_agent
+
+from utils import show_graph
+
 os.environ['USER_AGENT'] = 'rag_graph_2'
 
 """
 确定文件路径
 """
 
-import sys
 
 # 当前文件的绝对路径
 current_file_path = os.path.abspath(__file__)
@@ -31,8 +43,6 @@ def get_persist_directory(model_name):
 1. 创建矢量数据库对象
 """
 
-from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
 
 embed_model_name = "shaw/dmeta-embedding-zh"
 vector_store = Chroma(persist_directory=get_persist_directory(embed_model_name),embedding_function=OllamaEmbeddings(model=embed_model_name))
@@ -41,7 +51,6 @@ vector_store = Chroma(persist_directory=get_persist_directory(embed_model_name),
 2. 实现Langgraph 链
 """
 
-from langchain_core.tools import tool
 
 @tool(response_format="content_and_artifact",parse_docstring=True)      # docstring的内容对agent自动推理影响比较大
 def retrieve(query: str):
@@ -71,18 +80,12 @@ def retrieve(query: str):
         return "抱歉，我找不到任何相关信息。", None
     else:
         return serialized, filtered_docs
-    
 
-from langchain_ollama import ChatOllama
-from langchain_core.messages import SystemMessage
 
-from langgraph.graph import MessagesState, StateGraph,END
-from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import MemorySaver
 
 def build_graph_with_memory(llm_model_name):
     """构建 langgraph 链"""
-    
+
     llm = ChatOllama(model=llm_model_name,temperature=0, verbose=True)
 
     # 1: 生成可能包含要发送的工具调用的 AIMessage。
@@ -150,7 +153,7 @@ def build_graph_with_memory(llm_model_name):
         {END: END, "tools": "tools"},
     )
     graph_builder.add_edge("tools", "generate")
-    graph_builder.add_edge("generate", END)    
+    graph_builder.add_edge("generate", END)
 
     graph = graph_builder.compile()
 
@@ -183,7 +186,6 @@ def ask_with_history(graph,thread_id,question):
 虽然它们的行为比上述“链”更难预测，但它们能够执行多个检索步骤来处理查询，或者在单个搜索中进行迭代。
 """
 
-from langgraph.prebuilt import create_react_agent
 
 def create_agent(llm_model_name):
     """创建智能体"""
@@ -209,12 +211,11 @@ def ask_agent(agent,thread_id,question):
 def show_graph():
     """图形化显示链和智能体结构"""
 
-    from utils import show_graph
 
-    graph = build_graph_with_memory("qwen2.5")
+    graph = build_graph_with_memory("qwen3.5")
     show_graph(graph)
 
-    agent = create_agent("qwen2.5")
+    agent = create_agent("qwen3.5")
     show_graph(agent)
 
 
@@ -236,9 +237,9 @@ def test_model(llm_model_name):
     ask_agent(agent,thread_id,question2)
 
 if __name__ == '__main__':
-    
-    test_model('qwen2.5')
+
+    test_model('qwen3.5')
     test_model('llama3.1')
     test_model("MFDoom/deepseek-r1-tool-calling:7b")
 
-    show_graph()
+    # show_graph()

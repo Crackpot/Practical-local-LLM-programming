@@ -5,6 +5,14 @@
 # @function: 防止LLM生成某些参数
 # @version : V0.5
 # @Description ：防止LLM生成某些参数。
+from copy import deepcopy
+from typing import List
+
+from langchain_core.runnables import chain
+from langchain_core.tools import BaseTool
+from langchain_core.tools import InjectedToolArg, tool
+from langchain_ollama import ChatOllama
+from typing_extensions import Annotated
 
 # https://python.langchain.com/docs/how_to/tool_runtime/
 
@@ -15,8 +23,7 @@
 本操作指南向您展示了如何防止模型生成某些工具参数并在运行时直接注入它们。
 """
 
-from langchain_ollama import ChatOllama
-llm = ChatOllama(model="llama3.1",temperature=0.1,verbose=True)
+llm = ChatOllama(model="llama3.1", temperature=0.1, verbose=True)
 """
 temperature：用于控制生成语言模型中生成文本的随机性和创造性。
 当temperature值较低时，模型倾向于选择概率较高的词，生成的文本更加保守和可预测，但可能缺乏多样性和创造性;
@@ -24,16 +31,8 @@ temperature：用于控制生成语言模型中生成文本的随机性和创造
 当需要模型生成明确、唯一的答案时，例如解释某个概念，较低的temperature值更为合适；如果目标是为了产生创意或完成故事，较高的temperature值可能更有助于生成多样化和有趣的文本。
 """
 
-# Hiding arguments from the model
-
-from typing import List
-
-from langchain_core.tools import InjectedToolArg, tool
-from typing_extensions import Annotated
-
 user_to_pets = {}
 
-from langchain_core.tools import BaseTool
 
 class UpdateFavoritePets(BaseTool):
     name: str = "update_favorite_pets"
@@ -41,6 +40,7 @@ class UpdateFavoritePets(BaseTool):
 
     def _run(self, pets: List[str], user_id: Annotated[str, InjectedToolArg]) -> None:
         user_to_pets[user_id] = pets
+
 
 update_favorite_pets = UpdateFavoritePets()
 
@@ -66,6 +66,7 @@ def list_favorite_pets(user_id: Annotated[str, InjectedToolArg]) -> None:
     """
     print(f'list_favorite_pets is called:{user_id}')
     return user_to_pets.get(user_id, [])
+
 
 # If we look at the input schemas for these tools, we'll see that user_id is still listed:
 print(f'get_input_schema:{update_favorite_pets.get_input_schema().model_json_schema()}')
@@ -94,11 +95,8 @@ print("---1、调用LLM，将请求转化为json结构---")
 ai_msg = llm_with_tools.invoke(query)
 print(f'result:{ai_msg.tool_calls}')
 
+
 # Injecting arguments at runtime
-from copy import deepcopy
-
-from langchain_core.runnables import chain
-
 @chain
 def inject_user_id(ai_msg):
     tool_calls = []
@@ -108,15 +106,18 @@ def inject_user_id(ai_msg):
         tool_calls.append(tool_call_copy)
     return tool_calls
 
+
 new_args = inject_user_id.invoke(ai_msg)
 print(f'inject_user_id:{new_args}')
 
 # And now we can chain together our model, injection code, and the actual tools to create a tool-executing chain:
 tool_map = {tool.name: tool for tool in tools}
 
+
 @chain
 def tool_router(tool_call):
     return tool_map[tool_call["name"]]
+
 
 # And now we can chain together our model, injection code, and the actual tools to create a tool-executing chain:
 chain = llm_with_tools | inject_user_id | tool_router.map()

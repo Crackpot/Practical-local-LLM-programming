@@ -1,6 +1,6 @@
-#coding=utf-8
+# coding=utf-8
 
-#!/usr/bin/python
+# !/usr/bin/python
 # -*- coding:utf-8 -*-
 # @author  : 刘立军
 # @time    : 2025-01-14
@@ -8,9 +8,15 @@
 # @Description: 使用 nomic-embed-text 做英文嵌入检索很好，使用 llama3.1 效果一般
 # @version : V0.5
 
-# https://python.langchain.com/docs/tutorials/retrievers/
-
 import os
+from typing import List
+
+from langchain_core.documents import Document
+from langchain_core.runnables import chain
+from langchain_ollama.embeddings import OllamaEmbeddings
+
+
+# https://python.langchain.com/docs/tutorials/retrievers/
 
 def get_file_path():
     """获取文件路径。
@@ -23,12 +29,13 @@ def get_file_path():
     # 获取当前文件所在的目录
     current_dir = os.path.dirname(current_file_path)
 
-    file_path = os.path.join(current_dir,'assert/nke-10k-2023.pdf')
+    file_path = os.path.join(current_dir, 'assert/nke-10k-2023.pdf')
 
     return file_path
 
+
 def load_file(file_path):
-    """加载pdf文件"""    
+    """加载pdf文件"""
 
     # Loading documents
     from langchain_community.document_loaders import PyPDFLoader
@@ -56,19 +63,17 @@ def split_text(docs):
     )
     all_splits = text_splitter.split_documents(docs)
 
-    print(f"Number of splits: {len(all_splits)}")  
+    print(f"Number of splits: {len(all_splits)}")
 
     return all_splits
 
-# Embeddings
-
-from langchain_ollama.embeddings import OllamaEmbeddings
 
 embeddings = OllamaEmbeddings(model="nomic-embed-text")
 """
 nomic-embed-text: 一个高性能开放嵌入模型，只有27M，具有较大的标记上下文窗口。
 在做英文的嵌入和检索时，明显比llama3.1要好，可惜做中文不行。
-"""    
+"""
+
 
 def get_vector_store():
     """获取内存矢量数据库"""
@@ -84,12 +89,14 @@ def get_vector_store():
 
     return vector_store
 
+
 def similarity_search(query):
     """内存矢量数据库检索测试"""
 
     vector_store = get_vector_store()
     results = vector_store.similarity_search(query)
     return results
+
 
 def similarity_search_with_score(query):
     """内存矢量数据库检索测试
@@ -99,6 +106,7 @@ def similarity_search_with_score(query):
 
     results = vector_store.similarity_search_with_score(query)
     return results
+
 
 def embed_query(query):
     """嵌入查询测试"""
@@ -111,10 +119,6 @@ def embed_query(query):
 
 
 # Retrievers
-from typing import List
-
-from langchain_core.documents import Document
-from langchain_core.runnables import chain
 
 
 @chain
@@ -123,12 +127,12 @@ def retriever(query: str) -> List[Document]:
     return vector_store.similarity_search(query, k=1)
 
 
-def retriever_batch_1(query:List[str]):
+def retriever_batch_1(query: List[str]):
     r = retriever.batch(query)
     return r
 
 
-def retriever_batch_2(query:List[str]):
+def retriever_batch_2(query: List[str]):
     vector_store = get_vector_store()
     retriever = vector_store.as_retriever(
         search_type="similarity",
@@ -138,8 +142,9 @@ def retriever_batch_2(query:List[str]):
     r = retriever.batch(query)
     return r
 
+
 if __name__ == '__main__':
-    '''
+    """
     load_file(get_file_path())
     
     results = similarity_search("How many distribution centers does Nike have in the US?")
@@ -151,7 +156,7 @@ if __name__ == '__main__':
    
     results = embed_query("How were Nike's margins impacted in 2023?")
     print(f'embed_query results[0]:\n{results[0]}') 
-    '''
+    """
     query = [
         "How many distribution centers does Nike have in the US?",
         "When was Nike incorporated?",
@@ -161,6 +166,3 @@ if __name__ == '__main__':
     print(f'retriever.batch 1:\n{results}')
     results = retriever_batch_2(query)
     print(f'retriever.batch 2:\n{results}')
-
-
-

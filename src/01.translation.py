@@ -5,11 +5,13 @@
 # @function: 使用大模型实现翻译功能
 # @version : V0.5
 
-# 实例化本地大模型
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
+
+# 实例化本地大模型
 model = OllamaLLM(model="llama3.1")
 
-from langchain_core.messages import HumanMessage, SystemMessage
 
 def translate_1(text):
     """将文字翻译为意大利语"""
@@ -20,6 +22,7 @@ def translate_1(text):
 
     return model.invoke(messages)
 
+
 def translate_1_stream(text):
     """将文字翻译为意大利语，流式输出"""
     messages = [
@@ -29,9 +32,8 @@ def translate_1_stream(text):
     for token in model.stream(messages):
         yield token
 
-from langchain_core.prompts import ChatPromptTemplate
 
-def translate_2(text,language):
+def translate_2(text, language):
     """用提示词模板构建提示词，翻译文字"""
 
     # 1. system提示词
@@ -49,15 +51,14 @@ def translate_2(text,language):
     response = model.invoke(prompt)
     return response
 
+
 if __name__ == '__main__':
-    
+
     response = translate_1("Hello, how are you?")
     print(response)
-    
+
     for token in translate_1_stream("Hello, how are you?"):
         print(token, end="|")
-    
 
-    response = translate_2("First up, let's learn how to use a language model by itself.","Chinese")
+    response = translate_2("First up, let's learn how to use a language model by itself.", "Chinese")
     print(response)
-    

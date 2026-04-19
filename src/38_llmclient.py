@@ -6,8 +6,8 @@
 
 from openai import OpenAI
 
-class LLMClient:
 
+class LLMClient:
     # 在 .env 或系统环境变量里设置各家 API key（比如 OPENAI_API_KEY、ANTHROPIC_API_KEY 等）
     PROVIDERS = {
         "openai": {
@@ -40,9 +40,9 @@ class LLMClient:
         },
         "ollama": {
             "base_url": "http://localhost:11434/v1",
-            "api_key_env": None     # 使用任何字符串都可以
+            "api_key_env": None  # 使用任何字符串都可以
         },
-        "bailian":{
+        "bailian": {
             "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
             "api_key_env": "DASHSCOPE_API_KEY"
         },
@@ -94,11 +94,13 @@ class LLMClient:
                 stream=True,
                 **kwargs
             )
+
             def generator():
                 for chunk in response:
                     delta = chunk.choices[0].delta.content
                     if delta:
                         yield delta
+
             return generator()
         else:
             resp = self.client.chat.completions.create(
@@ -108,15 +110,16 @@ class LLMClient:
             )
             return resp.choices[0].message.content
 
+
 if __name__ == '__main__':
-    model_name = "qwen3"
+    model_name = "qwen3.5"
     llm = LLMClient(provider="ollama")
 
     print("流式模式结果：", end="", flush=True)
     for token in llm.chat(
-        model=model_name,
-        messages=[{"role": "user", "content": "用少于1000个字总结《西游记》"}],
-        stream=True
+            model=model_name,
+            messages=[{"role": "user", "content": "用少于1000个字总结《西游记》"}],
+            stream=True
     ):
         print(token, end="", flush=True)
 

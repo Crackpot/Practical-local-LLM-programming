@@ -37,7 +37,7 @@ def get_graph(file_id:str):
     return content
 
 def get_root(file_id:str,page=1, limit=20):
-    '''获取根节点和对应的边'''
+    """获取根节点和对应的边"""
     G = get_graph(file_id)
 
     # 确保是有向图

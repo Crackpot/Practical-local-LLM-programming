@@ -8,10 +8,14 @@
 
 # https://python.langchain.com/docs/how_to/tools_human/
 
+import json
 from typing import Dict, List
 
 from langchain_core.messages import AIMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
+from langchain_ollama import ChatOllama
+
 
 def create_tools():
     @tool
@@ -26,24 +30,23 @@ def create_tools():
         print(f'send_email is called:{recipient}:{message}')
         return f"邮件已经成功发送至：{recipient}."
 
-
     tools = [count_emails, send_email]
 
     return tools
 
+
 tools = create_tools()
 
-from langchain_ollama import ChatOllama
-from langchain_core.messages import HumanMessage
 
-def test_tool_call(model_name,query):
+def test_tool_call(model_name, query):
     """测试tool_call，看看输出内容"""
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
 
     messages = [HumanMessage(query)]
     ai_msg = llm_with_tools.invoke(messages)
     print(f' tool_calls is:\n{ai_msg.tool_calls}')
+
 
 def call_tools(msg: AIMessage) -> List[Dict]:
     """调用工具的通用方法。"""
@@ -54,17 +57,16 @@ def call_tools(msg: AIMessage) -> List[Dict]:
         tool_call["output"] = tool_map[tool_call["name"]].invoke(tool_call["args"])
     return tool_calls
 
-def tool_call(model_name,query):
+
+def tool_call(model_name, query):
     """使用chain调用tools很方便。这里直接输出json格式的结果"""
 
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
     chain = llm_with_tools | call_tools
     result = chain.invoke(query)
     print(f'chain.invoked:\n{result}')
 
-
-import json
 
 class NotApproved(Exception):
     """自定义异常。"""
@@ -94,10 +96,11 @@ def human_approval(msg: AIMessage) -> AIMessage:
     print("主人已批准。")
     return msg
 
-def approval(model_name,query):
+
+def approval(model_name, query):
     """由人类批准是否使用工具"""
 
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
 
     chain = llm_with_tools | human_approval | call_tools
@@ -108,17 +111,18 @@ def approval(model_name,query):
     except NotApproved as e:
         print(f'Not approved:{e}')
 
+
 if __name__ == '__main__':
     query = "我过去7天收到了多少封电子邮件？"
 
     print('--------test_tool_call----------------------')
-    test_tool_call("llama3.1",query)
-    test_tool_call("MFDoom/deepseek-r1-tool-calling:7b",query)
+    test_tool_call("llama3.1", query)
+    test_tool_call("MFDoom/deepseek-r1-tool-calling:7b", query)
 
     print('--------tool_call----------------------')
-    tool_call("llama3.1",query)
-    tool_call("MFDoom/deepseek-r1-tool-calling:7b",query)
+    tool_call("llama3.1", query)
+    tool_call("MFDoom/deepseek-r1-tool-calling:7b", query)
 
     print('--------approval----------------------')
-    approval("llama3.1",query)
-    approval("MFDoom/deepseek-r1-tool-calling:7b",query)
+    approval("llama3.1", query)
+    approval("MFDoom/deepseek-r1-tool-calling:7b", query)

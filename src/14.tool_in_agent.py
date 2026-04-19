@@ -12,7 +12,21 @@
 1.确定重要文件路径
 """
 
-import os,sys
+import os
+import sys
+
+from langchain_core.tools import tool
+from langchain_ollama import ChatOllama
+
+from common.MyVectorDB import LocalVectorDBChroma
+
+# 修复警告2：使用新的导入路径
+try:
+    # LangGraph V1.0+ 的新导入方式
+    from langchain.agents import create_agent
+except ImportError:
+    # 兼容旧版本
+    from langgraph.prebuilt import create_react_agent as create_agent
 
 # 将上级目录加入path，这样就可以引用上级目录的模块不会报错
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -25,40 +39,41 @@ current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 
 # csv源文件地址
-src_file_path = os.path.join(current_dir,'assert/animals.csv')
+src_file_path = os.path.join(current_dir, 'assert/animals.csv')
+
 
 def get_persist_directory(model_name):
     """矢量数据库存储路径"""
-    model_name = model_name.replace(":","-")
-    return os.path.join(current_dir,f'assert/animals_{model_name}')
+    model_name = model_name.replace(":", "-")
+    return os.path.join(current_dir, f'assert/animals_{model_name}')
+
 
 """
 2.在本地生成嵌入数据库
 """
 
-from common.MyVectorDB import LocalVectorDBChroma
-def create_db(model_name):    
+
+def create_db(model_name):
     """生成本地矢量数据库"""
 
     persist_directory = get_persist_directory(model_name)
     if os.path.exists(persist_directory):
         return
 
-    db = LocalVectorDBChroma(model_name,persist_directory)    
+    db = LocalVectorDBChroma(model_name, persist_directory)
     db.embed_csv(src_file_path)
+
 
 """
 3.智能体
 """
 
-from langchain_ollama import ChatOllama
-from langgraph.prebuilt import create_react_agent
 
-def ask_agent(embed_model_name,chat_modal_name,query):
+def ask_agent(embed_model_name, chat_modal_name, query):
     """测试智能体"""
 
     persist_directory = get_persist_directory(embed_model_name)
-    db = LocalVectorDBChroma(embed_model_name,persist_directory)
+    db = LocalVectorDBChroma(embed_model_name, persist_directory)
 
     # 基于Chroma 的 vector store 生成 检索器
     vector_store = db.get_vector_store()
@@ -67,40 +82,44 @@ def ask_agent(embed_model_name,chat_modal_name,query):
         search_kwargs={"k": 2},
     )
 
-    # 将 检索器 包装为 工具
-    tools = [
-        retriever.as_tool(
-            name="animal_info_retriever",
-            description="查询动物的信息",
-        )
-    ]
+    # 修复警告1：使用稳定的 @tool 装饰器替代 Beta API
+    @tool
+    def animal_info_retriever(search_query: str) -> str:
+        """查询动物的信息。输入应该是关于动物的问题或搜索关键词。"""
+        docs = retriever.invoke(search_query)
+        return "\n\n".join([doc.page_content for doc in docs])
 
-    llm = ChatOllama(model=chat_modal_name,temperature=0.1,verbose=True)
-    agent = create_react_agent(llm, tools)
+    tools = [animal_info_retriever]
+
+    llm = ChatOllama(model=chat_modal_name, temperature=0.1, verbose=True)
+
+    # 修复警告2：使用新的 API
+    agent = create_agent(llm, tools)
 
     # 显示智能体的详细内容
     for chunk in agent.stream({"messages": [("human", query)]}):
         print(chunk)
         print("----")
 
-def test_model(embed_model_name,chat_modal_name):
+
+def test_model(embed_model_name, chat_modal_name):
     print(f'\n---------------------{embed_model_name}-----------------------------')
     create_db(embed_model_name)
 
     query = "猪的学名是什么？它对人类有什么用处？"
-    ask_agent(embed_model_name,chat_modal_name,query)
+    ask_agent(embed_model_name, chat_modal_name, query)
 
     query = "蜜蜂的特点是什么？它对人类社会有什么作用？"
-    ask_agent(embed_model_name,chat_modal_name,query)
+    ask_agent(embed_model_name, chat_modal_name, query)
+
 
 if __name__ == '__main__':
+    test_model("shaw/dmeta-embedding-zh", "qwen3.5")
+    test_model("milkey/m3e", "qwen3.5")
+    test_model("mxbai-embed-large", "qwen3.5")
 
-    test_model("shaw/dmeta-embedding-zh","qwen2.5")
-    test_model("milkey/m3e","qwen2.5")
-    test_model("mxbai-embed-large","qwen2.5")
+    test_model("nomic-embed-text", "llama3.1")
+    test_model("all-minilm:33m", "llama3.1")
 
-    test_model("nomic-embed-text","llama3.1")
-    test_model("all-minilm:33m","llama3.1")
-
-    test_model("llama3.1","llama3.1")
-    test_model("qwen2.5","qwen2.5")
+    test_model("llama3.1", "llama3.1")
+    test_model("qwen3.5", "qwen3.5")

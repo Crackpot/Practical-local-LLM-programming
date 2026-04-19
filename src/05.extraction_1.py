@@ -11,8 +11,13 @@
 
 # The Schema
 
+from typing import List
 from typing import Optional
+
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 from pydantic import BaseModel, Field
+
 
 class Person(BaseModel):
     """Information about a person."""
@@ -33,10 +38,6 @@ class Person(BaseModel):
         default=None, description="Height measured in meters"
     )
 
-# The Extractor
-
-from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
 
 # Define a custom prompt to provide instructions and any additional context.
 # 1) You can add examples into the prompt template to improve extraction quality
@@ -58,17 +59,14 @@ prompt_template = ChatPromptTemplate.from_messages(
     ]
 )
 
-from langchain_ollama import ChatOllama
 
-def single_entry(model_name,text):
-
-    structured_llm = ChatOllama(model=model_name,temperature=0.5,verbose=True).with_structured_output(schema=Person)
+def single_entry(model_name, text):
+    structured_llm = ChatOllama(model=model_name, temperature=0.5, verbose=True).with_structured_output(schema=Person)
 
     prompt = prompt_template.invoke({"text": text})
     response = structured_llm.invoke(prompt)
     return response
 
-from typing import List
 
 class Data(BaseModel):
     """Extracted data about people."""
@@ -76,49 +74,48 @@ class Data(BaseModel):
     # Creates a model so that we can extract multiple entities.
     people: List[Person]
 
-def multiple_entry(model_name,text):
-    structured_llm = ChatOllama(model=model_name,temperature=0.5,verbose=True).with_structured_output(schema=Data)
+
+def multiple_entry(model_name, text):
+    structured_llm = ChatOllama(model=model_name, temperature=0.5, verbose=True).with_structured_output(schema=Data)
     prompt = prompt_template.invoke({"text": text})
     response = structured_llm.invoke(prompt)
     return response
 
 
 if __name__ == '__main__':
-    print ('--------------------llama3------------------------------')
+    print('--------------------llama3------------------------------')
 
     # llama3.1无法自动把feet转换成meter，所以我们把这个问题简化了一些，在text中直接用meter做单位。
     text = "Alan Smith is 1.83 meters tall and has blond hair."
-    response = single_entry("llama3.1",text)
+    response = single_entry("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
     text = "Alan Smith is 6 feet tall and has blond hair."
-    response = single_entry("llama3.1",text)
+    response = single_entry("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
     text = "Alan Smith is 1.83 meters tall and has blond hair. John Doe is 1.72 meters tall and has brown hair."
-    response = multiple_entry("llama3.1",text)
+    response = multiple_entry("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
     text = "Alan Smith is 1.88 meters tall and has blond hair. John Doe is 7 feet tall and has brown hair."
-    response = multiple_entry("llama3.1",text)
+    response = multiple_entry("llama3.1", text)
     print(f'\n llama3.1 response:\n{response}')
 
+    print('---------------------deepseek------------------------------')
 
-    print ('---------------------deepseek------------------------------')
-    
     text = "Alan Smith is 1.83 meters tall and has blond hair."
-    response = single_entry("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = single_entry("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n deepseek response:\n{response}')
 
     text = "Alan Smith is 6 feet tall and has blond hair."
-    response = multiple_entry("MFDoom/deepseek-r1-tool-calling:7b",text)
-    print(f'\n deepseek response:\n{response}') 
+    response = multiple_entry("MFDoom/deepseek-r1-tool-calling:7b", text)
+    print(f'\n deepseek response:\n{response}')
 
     text = "Alan Smith is 1.83 meters tall and has blond hair. John Doe is 1.72 meters tall and has brown hair."
-    response = multiple_entry("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = multiple_entry("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n deepseek response:\n{response}')
 
     text = "Alan Smith is 1.88 meters tall and has blond hair. John Doe is 7 feet tall and has brown hair."
-    response = single_entry("MFDoom/deepseek-r1-tool-calling:7b",text)
+    response = single_entry("MFDoom/deepseek-r1-tool-calling:7b", text)
     print(f'\n deepseek response:\n{response}')
-    

@@ -10,7 +10,7 @@
 import os
 os.environ['USER_AGENT'] = 'summarize'
 
-llm_model_name = "qwen2.5"
+llm_model_name = "qwen3.5"
 
 from langchain_ollama import ChatOllama
 llm = ChatOllama(model=llm_model_name,temperature=0.3, verbose=True)

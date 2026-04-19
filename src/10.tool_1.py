@@ -8,30 +8,32 @@
 
 # https://python.langchain.com/docs/how_to/tool_results_pass_to_model/
 
+# 让模型调用一个工具，并把消息添加到历史记录中。
+from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
+from langchain_ollama import ChatOllama
+
 
 @tool
 def add(a: int, b: int) -> int:
     """计算a和b的和。"""
-    print (f"add is called...{a}+{b}")
+    print(f"add is called...{a}+{b}")
     return a + b
+
 
 @tool
 def multiply(a: int, b: int) -> int:
     """计算a和b的乘积。"""
-    print (f"multiply is called...{a}*{b}")
+    print(f"multiply is called...{a}*{b}")
     return a * b
+
 
 tools = [add, multiply]
 
 
-# 让模型调用一个工具，并把消息添加到历史记录中。
-from langchain_core.messages import HumanMessage
-from langchain_ollama import ChatOllama
-
-def caculate(model_name,query):
+def caculate(model_name, query):
     print(f"\n---------{model_name}---------------")
-    llm = ChatOllama(model=model_name,temperature=0.1,verbose=True)
+    llm = ChatOllama(model=model_name, temperature=0.1, verbose=True)
     llm_with_tools = llm.bind_tools(tools)
 
     messages = [HumanMessage(query)]
@@ -59,8 +61,9 @@ def caculate(model_name,query):
     result = llm_with_tools.invoke(messages)
     print(f'result is:{result.content}')
 
+
 if __name__ == '__main__':
     query = "3 * 12等于多少？ 11 + 49等于多少？"
 
-    caculate("llama3.1",query)
-    #caculate("deepseek-llm",query)
+    caculate("llama3.1", query)
+    # caculate("deepseek-llm",query)

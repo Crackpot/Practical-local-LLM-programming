@@ -7,10 +7,9 @@
 import asyncio
 import os
 
-from pydantic import AnyUrl
-
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
+from pydantic import AnyUrl
 
 # 获取当前文件所在目录的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,9 +19,10 @@ server_path = os.path.join(current_dir, "fastmcp_server.py")
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
     command="python",
-    args=[server_path], 
+    args=[server_path],
     env=None,
 )
+
 
 async def run():
     async with stdio_client(server_params) as (read, write):
@@ -60,6 +60,7 @@ async def run():
             if prompts.prompts:
                 prompt = await session.get_prompt("greet_user", arguments={"name": "Alice", "style": "friendly"})
                 print(f"Prompt result: {prompt.messages[0].content}")
+
 
 def main():
     """Entry point for the client script."""

@@ -9,6 +9,7 @@ from mcp.server.fastmcp import FastMCP
 # Create an MCP server
 mcp = FastMCP("Demo MCP Server")
 
+
 # Add an addition tool
 @mcp.tool()
 def add(a: int, b: int) -> int:
@@ -32,11 +33,13 @@ def greet_user(name: str, style: str = "friendly") -> str:
         "formal": "Please write a formal, professional greeting",
         "casual": "Please write a casual, relaxed greeting",
     }
-    return f"{styles.get(style, styles['friendly'])} for someone named {name}."   
+    return f"{styles.get(style, styles['friendly'])} for someone named {name}."
+
 
 def main():
     # Initialize and run the server
     mcp.run(transport='stdio')
+
 
 if __name__ == "__main__":
     main()

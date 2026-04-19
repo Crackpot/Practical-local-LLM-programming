@@ -23,12 +23,14 @@ from langchain_community.utilities import SQLDatabase
 
 db = SQLDatabase.from_uri(f"sqlite:///{db_file_path}")
 
+
 def test_db():
     print(db.dialect)
     print(db.get_usable_table_names())
-    #print(db.get_table_info())
+    # print(db.get_table_info())
     print(db.run("SELECT * FROM Artist LIMIT 10;"))
-    
+
+
 """
 1. 将SQLite服务转化为工具
 """
@@ -37,16 +39,18 @@ from langchain_ollama import ChatOllama
 
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 
+
 def create_tools(llm_model_name):
     """创建工具"""
 
-    llm = ChatOllama(model=llm_model_name,temperature=0, verbose=True)
+    llm = ChatOllama(model=llm_model_name, temperature=0, verbose=True)
     toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 
     tools = toolkit.get_tools()
     print(tools)
 
     return tools
+
 
 """
 2. 系统提示词
@@ -79,18 +83,20 @@ system_message = SystemMessage(content=system)
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage
 
-def ask(llm_model_name,question):
+
+def ask(llm_model_name, question):
     """询问智能体"""
 
     tools = create_tools(llm_model_name)
-    llm = ChatOllama(model=llm_model_name,temperature=0, verbose=True)
+    llm = ChatOllama(model=llm_model_name, temperature=0, verbose=True)
     agent_executor = create_react_agent(llm, tools, state_modifier=system_message)
 
     for s in agent_executor.stream(
-        {"messages": [HumanMessage(content=question)]}
+            {"messages": [HumanMessage(content=question)]}
     ):
         print(s)
         print("----")
+
 
 def test_model(llm_model_name):
     """测试大模型"""
@@ -100,16 +106,16 @@ def test_model(llm_model_name):
     questions = [
         "How many Employees are there?",
         "Which country's customers spent the most?",
-        "Describe the PlaylistTrack table"   #区分大小写，待改进。比如：用 PlaylistTrack 可以工作，但是用 playlisttrack 不行
+        "Describe the PlaylistTrack table"  # 区分大小写，待改进。比如：用 PlaylistTrack 可以工作，但是用 playlisttrack 不行
     ]
 
     for question in questions:
-        ask(llm_model_name,question)
+        ask(llm_model_name, question)
+
 
 if __name__ == '__main__':
+    test_model("qwen3.5")
 
-    test_model("qwen2.5")
-
-    test_model("llama3.1")    
+    test_model("llama3.1")
 
     test_model("MFDoom/deepseek-r1-tool-calling:7b")
